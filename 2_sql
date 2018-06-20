@@ -1,0 +1,24 @@
+--1 запрос
+with base as (
+		select e.*, 
+			 event_ts as start_ts, 
+			 event_type as start_type,
+			 lead (event_ts) over (partition by uid, point_uid order by event_ts,event_type desc) as end_ts,
+			 lead (event_type) over (partition by uid, point_uid order by event_ts,event_type desc) as end_type
+		from mdata.mevent e 
+		where event_ts >= to_timestamp('01.01.2018','dd.mm.yyyy')
+		order by uid, point_uid, event_ts, event_type desc
+)
+select uid, start_ts, end_ts 
+from base
+where event_type = 's'
+;
+
+--2 устройства и точки, на которых есть незакрытые соединения или соединения закрытые без открытия
+select uid, point_uid,
+	  sum(case when event_type = 's' then 1 when event_type = 'e' then -1 end) as total_result
+from mdata.mevent e 
+where event_ts >= to_timestamp('01.01.2018','dd.mm.yyyy')
+group by uid, point_uid
+having sum(case when event_type = 's' then 1 when event_type = 'e' then -1 end) != 0
+order by uid, point_uid;

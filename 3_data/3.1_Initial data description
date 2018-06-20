@@ -1,0 +1,19 @@
+Набор данных: Зоны платной парковки
+Ссылка на файл: https://op.mos.ru/EHDWSREST/catalog/export/get?id=276687
+Количество записей: 155
+Атрибуты: ID;"Name";"PlaceID";"global_id";"AdmArea";"District";"CoordinateCenters";"Coordinates";"geoData";								
+
+Аналогичный набор создан в БД Постгрес:
+CREATE TABLE mdata.parking
+(
+    "AdmArea" character varying(1000) COLLATE pg_catalog."default",
+    "District" character varying(1000) COLLATE pg_catalog."default",
+    "ID" integer NOT NULL,
+    "Name" character varying(1000) COLLATE pg_catalog."default",
+    "PlaceID" integer,
+    "global_id" integer,
+    "CoordinateCenters" point,
+    "Coordinates" character varying(10000) COLLATE pg_catalog."default",
+    "geoData" polygon,
+    CONSTRAINT parking_pkey2 PRIMARY KEY ("ID")
+);

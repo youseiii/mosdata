@@ -1,0 +1,19 @@
+-- ranking AdmAreas by number of parking places and total area of parking places
+with base as (
+		select "AdmArea", count(*) as cnt, sum(area(path("geoData"))) as area
+		from mdata.parking
+		group by "AdmArea"
+		order by 2 desc)
+select "AdmArea", row_number() over (order by cnt desc) as rating_cnt,
+row_number() over (order by area desc) as rating_area
+from base
+order by 1
+;
+
+-- finding largest parking places in all AdmAreas
+select "AdmArea" ,"ID", "Name" from (
+			select p.*, 
+				  row_number() over (partition by "AdmArea" order by area(path("geoData"))) as area_rank
+			from mdata.parking p) as base
+where area_rank = 1
+order by 1;
